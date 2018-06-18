@@ -1,5 +1,5 @@
 {
-  "name": "arcath/wup-client",
+  "name": "ed-itsolutions/wup-client",
   "description": "WordPress Update Provider client for use in plugins / themes.",
   "require": {
     "php": "^5.3.3 || ^7.0"
