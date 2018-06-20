@@ -66,7 +66,12 @@ class WUPClient{
 
   public function updateResponse($state){
     if($this->type == 'theme'){
-      return array();
+      return array(
+        'new_version' => $state->wupVersion,
+        'url' => $state->detailsUrl,
+        'package' => $state->downloadUrl,
+        'theme' => $this->slug
+      );
     }else{
       $update = new StdClass;
       $update->slug = $this->slug;
@@ -120,6 +125,11 @@ class WUPClient{
     return $data['Version'];
   }
 
+  public function getLocalThemeVersion(){
+    $theme = wp_get_theme($this->theme);
+	  return $theme->get('Version');
+  }
+
   public function getWUPData($localVersion){
     global $wp_version;
 
@@ -143,7 +153,7 @@ class WUPClient{
     );
 
     $response = wp_remote_get($this->url, $args);
-    
+
     return json_decode($response['body']);
   }
 }
