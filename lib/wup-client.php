@@ -48,7 +48,7 @@ class WUPClient{
       &&
       !empty($state->wupVersion)
       &&
-      $state->wupVersion != $state->localVersion
+      Composer\Semver\Comparator::greaterThan($state->wupVersion, $state->localVersion)
     ){
 			$updates->response[$this->updateResponseKey()] = $this->updateResponse($state);
     }
