@@ -46,3 +46,11 @@ Exit Codes:
 
  - 1 - Something went wrong deploying to domain.
  - 2 - No deploy key set.
+
+ ## Client Conflict Resolution
+
+ WUP-Client may end up in multiple plugins on the same site. It maybe that it is being used by 2 wp-update-provider servers and you have no control over updating the other installations.
+
+ To prevent issues where pluginA uses wup-client 0.0.X and pluginB uses 0.1.X may cause pluginB to use 0.0.X's `WUPClient` class a system is in place to ensure that the lastest version of WUPClient is used by all plugins and themes on the site.
+
+ If breaking changes are introduced a system will be devised to ensure that WUPClient is used within the correct major version.

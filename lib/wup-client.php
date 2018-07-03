@@ -1,5 +1,25 @@
 <?php
+// if you change this make sure you change the class name below (0.0.1 becomes WUPClient0_0_1).
+$classVersion = "0.1.0";
+
+if(!defined('WUP_CLIENT_CLASS_VERSION')){
+  define('WUP_CLIENT_CLASS_VERSION', $classVersion);
+}else{
+  if(Composer\Semver\Comparator::greaterThan($classVersion, WUP_CLIENT_CLASS_VERSION)){
+    define('WUP_CLIENT_CLASS_VERSION', $classVersion);
+  }
+}
+
 class WUPClient{
+  public function __construct($type, $slug, $url){
+    $className = 'WUPClient' . str_replace('.', '_', WUP_CLIENT_CLASS_VERSION);
+
+    new $className($type, $slug, $url);
+  }
+}
+
+
+class WUPClient0_1_0{
   public $url;
   public $type;
   public $slug;
@@ -15,27 +35,41 @@ class WUPClient{
     $this->hooks();
   }
 
-  public function hooks(){
-    // When WordPress checks for update.
-    add_filter('pre_set_site_transient_update_' . $this->type . 's', array($this, 'onTransientUpdate'));
+  public function hooks(){    
+    // Add actions when WordPress would normally check for updates.
+    add_action('load-' . $this->type . '.php', array($this, 'maybeUpdate'));
+    add_action('load-update.php', array($this, 'maybeUpdate'));
+    add_action('load-update-core.php', array($this, 'maybeUpdate'));
+    add_action('wp_update_' . $this->type . 's', array($this, 'maybeUpdate'));
 
-    // Inform WordPress of the monitored update.
-		add_filter('site_transient_update_' . $this->type . 's', array($this,'injectUpdate'));
+    // Inject the update 
+    add_filter('site_transient_update_' . $this->type . 's', array($this,'injectUpdate'));
 
-		//Delete our update info when WP deletes its own.
-    //This usually happens when a theme is installed, removed or upgraded.
-    // Delete update data when WordPress clears its data
-		add_action('delete_site_transient_update_' . $this->type . 's', array($this, 'deleteStoredData'));
+    // Clear data when WordPress clears its cache
+    add_action('delete_site_transient_update_' . $this->type . 's', array($this, 'deleteStoredData'));
+  }
+
+  public function maybeUpdate(){
+    $state = get_option($this->settingName, new StdClass);
+
+    // If this is a force check OR it has been 12 hours since the last check OR the state is empty.
+    if(
+      isset($_GET['force-check'])
+      ||
+      (
+        !empty($state)
+        &&
+        $state->lastCheck < (time() - (12 * HOUR_IN_SECONDS))
+      )
+      ||
+      empty($state)
+    ){
+      $this->checkForUpdates();
+    }
   }
 
   public function deleteStoredData(){
     delete_option($this->settingName);
-  }
-
-  public function onTransientUpdate($value){
-    $this->checkForUpdates();
-
-    return $value;
   }
 
   public function injectUpdate($updates){
@@ -85,7 +119,7 @@ class WUPClient{
   }
 
   public function checkForUpdates(){
-    $state = get_option($this->settingName);
+    $state = get_option($this->settingName, new StdClass);
 
     if(!empty($state)){
       $state = new StdClass;
