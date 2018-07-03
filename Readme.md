@@ -41,3 +41,8 @@ wup_build(
   'http://yoursite.com/wp-admin/admin-post.php' // The admin-post.php url for your site.
 );
 ```
+
+Exit Codes:
+
+ - 1 - Something went wrong deploying to domain.
+ - 2 - No deploy key set.

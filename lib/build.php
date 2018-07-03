@@ -1,5 +1,10 @@
 <?php
 function build_and_release($slug, $rootPath, $deployKey, $url){
+  if(!isset($deployKey) || $deployKey === ""){
+    echo("Deploy key not set.");
+    exit(2);
+  }
+
   $zip = new ZipArchive();
   $filename = $rootPath . '/' . $slug . '.zip';
 
@@ -63,6 +68,7 @@ function build_and_release($slug, $rootPath, $deployKey, $url){
   if(!isset($details->error) && !isset($details->success)){
     var_dump($details);
     echo('Something went wrong submitting to ' . $url . PHP_EOL);
+    exit(1);
     return;
   }
 
