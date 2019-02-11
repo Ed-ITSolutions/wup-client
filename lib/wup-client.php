@@ -20,7 +20,7 @@ class WUPClient{
   }
 }
 
-class WUPClient0_1_1{
+class WUPClient0_1_2{
   public $url;
   public $type;
   public $slug;
@@ -203,7 +203,8 @@ class WUPClient0_1_1{
       'blocking'    => true,
       'headers'     => array(
         'WP_DOMAIN' => home_url(),
-        'WP_VERSION' => $localVersion
+        'WP_VERSION' => $localVersion,
+        'WUP_CLIENT_VERSION' => '0.1.2'
       ),
       'cookies'     => array(),
       'body'        => null,
