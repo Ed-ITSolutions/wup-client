@@ -60,6 +60,8 @@ class WUPClient0_1_1{
       (
         !empty($state)
         &&
+        isset($state->lastCheck)
+        &&
         $state->lastCheck < (time() - (12 * HOUR_IN_SECONDS))
       )
       ||
